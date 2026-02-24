@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบค้นหาข้อมูลผู้ประเมิน</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div style="text-align: center; margin-top: 10px;">
+    <h1 style="color: #003366; margin-bottom: 5px;">ระบบตรวจสอบผลการประเมินมาตรฐานฯ 3S </h1>
+    <div style="width: 80px; height: 3px; background-color: #d4a017; margin: 0 auto 15px;"></div>
+    
+    <p style="color: #555; font-size: 16px; font-family: 'Sarabun', sans-serif;">
+        ปีงบประมาณ พ.ศ. 2569
+    </p>
+</div>
+    </header>
+
+    <div class="dashboard-container">
+        <aside class="search-panel">
+            <form id="searchForm">
+                <section>
+                    <label>ประเภทหน่วยงาน:</label>
+                    <div class="type-selector">
+                        <input type="radio" id="all" name="org_type" value="all" checked>
+                        <label for="all">ทั้งหมด</label>
+                        <input type="radio" id="sbt" name="org_type" value="ศบต">
+                        <label for="sbt">ศบต.</label>
+                        <input type="radio" id="sst" name="org_type" value="ศสต">
+                        <label for="sst">ศสต.</label>
+                    </div>
+                </section>
+
+                <section>
+                    <label for="region">เลือกเขต:</label>
+                    <select id="region" name="region">
+                        <option value="">-- กำลังโหลดข้อมูล --</option>
+                    </select>
+                </section>
+
+                <section>
+                    <label for="province">เลือกจังหวัด:</label>
+                    <select id="province" name="province">
+                        <option value="">-- ทั้งหมด --</option>
+                    </select>
+                </section>
+
+                <div class="button-group">
+    <button type="submit" class="btn-search">
+        <span>🔍</span> ค้นหาข้อมูล
+    </button>
+    <button type="button" id="btnExport" class="btn-export">
+        <span>📥</span> ดาวน์โหลด Excel
+    </button>
+    <button type="reset" id="btnReset" class="btn-reset">
+        <span>🔄</span> ล้างค่า
+    </button>
+</div>
+            </form>
+        </aside>
+
+        <section class="result-panel">
+            <div id="resultArea">
+                <div class="placeholder-text">กรุณาเลือกเงื่อนไขและกดปุ่มค้นหาเพื่อดูข้อมูล</div>
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
