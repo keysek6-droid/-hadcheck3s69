@@ -1,0 +1,293 @@
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap');
+
+:root {
+    /* ชุดสีทางการ: น้ำเงินกรมท่า, ทองอ่อน, และเทาภูมิฐาน */
+    --gov-blue: #003366; 
+    --gov-blue-light: #004a94;
+    --gov-gold: #cfa144;
+    --gov-gold-light: #e6c17a;
+    --bg-light: #f0f2f5;
+    --white: #ffffff;
+    --border: #d1d5db;
+    --text-main: #1f2937;
+    --success: #10b981;
+}
+
+body {
+    font-family: 'Sarabun', sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header: เพิ่มความภูมิฐานด้วย Gradient และเงาที่นุ่มนวล */
+.main-header {
+    background: var(--white);
+    padding: 16px 0;
+    text-align: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    z-index: 20;
+    border-bottom: 4px solid var(--gov-gold);
+}
+
+.main-header h1 { 
+    margin: 0; 
+    color: var(--gov-blue); 
+    font-size: 22px; 
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.header-line { 
+    width: 60px; 
+    height: 3px; 
+    background: linear-gradient(to right, var(--gov-gold), var(--gov-gold-light)); 
+    margin: 8px auto 0; 
+    border-radius: 2px;
+}
+
+/* Dashboard Layout */
+.dashboard-container {
+    display: flex;
+    flex: 1;
+    gap: 20px;
+    padding: 20px;
+    max-width: 1300px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* Search Panel: เพิ่มมิติด้วยมลทินที่นุ่มนวลและ border-top */
+.search-panel {
+    flex: 0 0 300px;
+    background: var(--white);
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    height: fit-content;
+}
+
+section { margin-bottom: 20px; }
+label { 
+    display: block; 
+    font-weight: 600; 
+    margin-bottom: 8px; 
+    color: var(--gov-blue); 
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+}
+
+/* ตกแต่ง Input และ Select */
+select {
+    width: 100%; 
+    padding: 11px; 
+    border-radius: 8px; 
+    border: 1.5px solid var(--border); 
+    font-family: 'Sarabun'; 
+    font-size: 14px;
+    background-color: #f9fafb;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+select:focus {
+    outline: none;
+    border-color: var(--gov-blue);
+    box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
+    background-color: #fff;
+}
+
+/* Type Selector: สไตล์ Tab ทันสมัย */
+.type-selector {
+    display: flex; 
+    background: #e5e7eb; 
+    padding: 4px; 
+    border-radius: 10px;
+}
+
+.type-selector label {
+    flex: 1; 
+    text-align: center; 
+    padding: 10px; 
+    margin: 0; 
+    cursor: pointer;
+    border-radius: 8px; 
+    color: #4b5563; 
+    transition: all 0.3s; 
+    font-size: 13px;
+    font-weight: 600;
+    justify-content: center;
+}
+
+.type-selector input:checked + label { 
+    background: var(--white); 
+    color: var(--gov-blue);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Buttons: มีมิติและความชัดเจน */
+.button-group { gap: 12px; margin-top: 20px; }
+
+button { 
+    width: 100%;
+    padding: 12px; 
+    border-radius: 8px; 
+    border: none; 
+    font-weight: 600; 
+    font-family: 'Sarabun'; 
+    cursor: pointer; 
+    transition: all 0.2s;
+    font-size: 15px;
+}
+
+.btn-search { 
+    background: var(--gov-blue); 
+    color: white;
+    box-shadow: 0 4px 6px rgba(0, 51, 102, 0.2);
+}
+
+.btn-search:hover { 
+    background: var(--gov-blue-light);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(0, 51, 102, 0.25);
+}
+
+.btn-reset { 
+    background: #f3f4f6; 
+    color: #4b5563;
+    margin-top: 8px;
+}
+
+.btn-reset:hover { background: #e5e7eb; }
+
+/* Result Panel */
+.result-panel {
+    flex: 1;
+    background: var(--white);
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Table Style */
+.table-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+}
+
+table thead th { 
+    background: #f8fafc; 
+    color: var(--gov-blue); 
+    padding: 14px 10px; 
+    font-weight: 700;
+    border-bottom: 2px solid var(--gov-blue);
+    text-transform: uppercase;
+    font-size: 13px;
+}
+
+table td { 
+    padding: 14px 12px; 
+    border-bottom: 1px solid #f1f5f9; 
+    color: #334155;
+}
+
+tr:hover { background-color: #f1f5f9; }
+
+/* Status Badge - เพิ่มความโดดเด่นให้ผลประเมิน */
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-weight: 700;
+    font-size: 12px;
+    background: rgba(207, 161, 68, 0.1);
+    color: var(--gov-gold);
+    border: 1px solid rgba(207, 68, 68, 0.2);
+}
+
+/* Pagination */
+.pagination-controls { padding: 20px 0 0 0; gap: 15px; }
+
+.pagination-controls button {
+    width: auto;
+    padding: 8px 16px;
+    background-color: var(--white);
+    color: var(--gov-blue);
+    border: 1px solid var(--gov-blue);
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.pagination-controls button:hover:not(:disabled) {
+    background-color: var(--gov-blue);
+    color: white;
+}
+
+.pagination-controls button:disabled {
+    border-color: #d1d5db;
+    color: #9ca3af;
+}
+
+/* สไตล์ Scrollbar */
+.table-wrapper::-webkit-scrollbar { width: 8px; }
+.table-wrapper::-webkit-scrollbar-track { background: #f1f1f1; }
+.table-wrapper::-webkit-scrollbar-thumb { 
+    background: #cbd5e1; 
+    border-radius: 10px; 
+    border: 2px solid #f1f1f1;
+}
+/* จัดกลุ่มปุ่มให้มีระยะห่างที่สม่ำเสมอ */
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* ระยะห่างระหว่างปุ่มตามรูปตัวอย่าง */
+    margin-top: 24px;
+}
+
+/* ปุ่มดาวน์โหลด Excel - สไตล์สะอาดตา (Clean & Professional) */
+.btn-export {
+    background: #f8fafc; /* สีพื้นเทาขาวจางๆ */
+    color: #475569;     /* สีตัวอักษรเทาเข้ม */
+    border: 1px solid #e2e8f0; /* เส้นขอบบางๆ */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    margin-top: 0; /* รีเซ็ต margin เพื่อใช้ gap แทน */
+}
+
+.btn-export:hover {
+    background: #f1f5f9;
+    color: var(--gov-blue);
+    border-color: var(--gov-blue);
+    transform: translateY(-1px);
+}
+
+/* ปรับปรุงปุ่มล้างค่าให้ดูเบาลง (Minimal) */
+.btn-reset {
+    background: transparent;
+    color: #94a3b8;
+    border: 1px solid transparent;
+    margin-top: 0;
+}
+
+.btn-reset:hover {
+    background: #fff1f2;
+    color: #e11d48;
+    border-color: #fecdd3;
+}
+
+/* เพิ่ม Effect เมื่อกดปุ่ม */
+button:active {
+    transform: translateY(0);
+    filter: brightness(0.95);
+}
