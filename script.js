@@ -37,9 +37,10 @@ async function loadSheetData() {
             fetch(sbtUrl).then(res => res.text())
         ]);
         
+        // โหลดข้อมูลโดยระบุ Index ผลการประเมิน
         allEvaluationData = [
-            ...parseCSV(sstRes, 'ศสต', 27), 
-            ...parseCSV(sbtRes, 'ศบต', 33)
+            ...parseCSV(sstRes, 'ศสต', 27), // ศสต ใช้ Index 27
+            ...parseCSV(sbtRes, 'ศบต', 33)  // ศบต ใช้ Index 33
         ];
         
         filteredData = [...allEvaluationData];
@@ -61,11 +62,14 @@ function parseCSV(csvText, type, resultIndex) {
         const clean = (val) => val ? val.replace(/^"|"$/g, '').trim() : '';
         
         if (cols.length > resultIndex) {
+            // แก้ไขจุดนี้: ถ้าเป็น ศสต ให้ใช้คอลัมน์ G (Index 6), ถ้าเป็น ศบต ให้ใช้คอลัมน์ F (Index 5)
+            const unitNameIndex = (type === 'ศสต') ? 6 : 5;
+
             result.push({
                 type: type,
                 region: clean(cols[3]),   
                 province: clean(cols[4]), 
-                unitName: clean(cols[5]), 
+                unitName: clean(cols[unitNameIndex]), 
                 result: clean(cols[resultIndex]) || 'รอกรอกผล'
             });
         }
@@ -116,18 +120,17 @@ function displayResults() {
     const paginatedItems = filteredData.slice(start, end);
     const totalPages = Math.ceil(filteredData.length / rowsPerPage);
 
-    // แก้ไขส่วนนี้: ปรับปุ่มให้เล็กลงและอยู่ขวาสุด
     let html = `
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-family: Sarabun;">
-            <div style="font-size: 14px; color: #003366;">
-                พบ <span style="font-weight: bold;">${filteredData.length}</span> รายการ
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px; font-family: Sarabun;">
+            <div style="font-size: 14px; color: #666;">
+                พบ <span style="font-weight: bold; color: #003366;">${filteredData.length}</span> รายการ
             </div>
             <button onclick="exportToExcel()" style="
-                display: inline-flex; align-items: center; gap: 5px;
+                display: flex; align-items: center; gap: 6px;
                 background-color: #217346; color: white; border: none;
-                padding: 5px 10px; border-radius: 4px; cursor: pointer;
+                padding: 6px 12px; border-radius: 4px; cursor: pointer;
                 font-family: 'Sarabun'; font-size: 13px; transition: 0.2s;
-                width: auto; min-width: 80px;">
+                box-shadow: 0 1px 2px rgba(0,0,0,0.1); width: auto;">
                 <span style="font-size: 14px;">📊</span> Excel
             </button>
         </div>
@@ -140,17 +143,15 @@ function displayResults() {
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th style="width: 10%;">ประเภท</th>
-                        <th style="text-align:left; width: 45%;">หน่วยงาน</th>
-                        <th style="width: 10%;">เขต</th>
-                        <th style="text-align:left; width: 15%;">จังหวัด</th>
-                        <th style="width: 20%;">ผลประเมิน</th>
+                        <th>ประเภท</th>
+                        <th style="text-align:left;">หน่วยงาน</th>
+                        <th>เขต</th>
+                        <th style="text-align:left;">จังหวัด</th>
+                        <th>ผลประเมิน</th>
                     </tr>
                 </thead>
                 <tbody>
     `;
-
-    // ... ส่วนวนลูป paginatedItems.forEach และ html จนจบเหมือนเดิม ...
 
     paginatedItems.forEach((item, index) => {
         const rowBg = index % 2 === 0 ? '#ffffff' : '#f8fafc';
