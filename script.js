@@ -1,7 +1,10 @@
 const SST_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSHyPTTh-spmZLpomLXNiKqKFPUHIWLe74ZfUnWuHoQIKAWHHsuG8s5i7kBooTTt1MP9QzjqF9kyC9J/pub?gid=1046327838&single=true&output=csv';
-const SBT_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSysA0Ea2atkqSu4fGnw_aYDeZACOb87esXHYdv2mBEkXBx_8COMV8dGED4O0Z5QH-XBMOTP3kW7Po4/pub?gid=1756056063&single=true&output=csv';
+const SBT_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ4b--rZComvk7MvvpnPRU_B-chB77lHmNhhKzH8Wt2FgVad2XbVzmw5B5UKem3m12r2fOd1_ngF20N/pub?gid=1651992591&single=true&output=csv';
 
-let allEvaluationData = [];
+let rawDataStore = {
+    sst: [],
+    sbt: []
+};
 let filteredData = []; 
 let currentPage = 1;
 const rowsPerPage = 10;
@@ -40,7 +43,7 @@ async function loadSheetData() {
         // โหลดข้อมูลโดยระบุ Index ผลการประเมิน
         allEvaluationData = [
             ...parseCSV(sstRes, 'ศสต', 27), // ศสต ใช้ Index 27
-            ...parseCSV(sbtRes, 'ศบต', 33)  // ศบต ใช้ Index 33
+            ...parseCSV(sbtRes, 'ศบต', 33)  // ศบต แก้ไขเป็น Index 33 ตามไฟล์ล่าสุด
         ];
         
         filteredData = [...allEvaluationData];
@@ -62,8 +65,8 @@ function parseCSV(csvText, type, resultIndex) {
         const clean = (val) => val ? val.replace(/^"|"$/g, '').trim() : '';
         
         if (cols.length > resultIndex) {
-            // แก้ไขจุดนี้: ถ้าเป็น ศสต ให้ใช้คอลัมน์ G (Index 6), ถ้าเป็น ศบต ให้ใช้คอลัมน์ F (Index 5)
-            const unitNameIndex = (type === 'ศสต') ? 6 : 5;
+            // แก้ไขจุดนี้: สำหรับไฟล์ปัจจุบัน ทั้ง ศสต และ ศบต ชื่อหน่วยงานอยู่ที่คอลัมน์ G (Index 6)
+            const unitNameIndex = 6;
 
             result.push({
                 type: type,
