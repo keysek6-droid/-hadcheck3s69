@@ -3,27 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบค้นหาข้อมูลผู้ประเมิน</title>
+    <title>ระบบตรวจสอบผลการประเมินมาตรฐานฯ 3S</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <header class="main-header">
-        <div style="text-align: center; margin-top: 10px;">
-    <h1 style="color: #003366; margin-bottom: 5px;">ระบบตรวจสอบผลการประเมินมาตรฐานฯ 3S </h1>
-    <div style="width: 80px; height: 3px; background-color: #d4a017; margin: 0 auto 15px;"></div>
-    
-    <p style="color: #555; font-size: 16px; font-family: 'Sarabun', sans-serif;">
-        ปีงบประมาณ พ.ศ. 2569
-    </p>
-</div>
+        <div class="header-container">
+            <h1>ระบบตรวจสอบผลการประเมินมาตรฐานฯ 3S</h1>
+            <div class="header-badge">ปีงบประมาณ พ.ศ. 2569</div>
+        </div>
     </header>
 
     <div class="dashboard-container">
         <aside class="search-panel">
             <form id="searchForm">
                 <section>
-                    <label>ประเภทหน่วยงาน:</label>
+                    <label class="label-title">ประเภทหน่วยงาน</label>
                     <div class="type-selector">
                         <input type="radio" id="all" name="org_type" value="all" checked>
                         <label for="all">ทั้งหมด</label>
@@ -35,33 +32,36 @@
                 </section>
 
                 <section>
-                    <label for="region">เลือกเขต:</label>
+                    <label for="region" class="label-title">เลือกเขต</label>
                     <select id="region" name="region">
                         <option value="">-- กำลังโหลดข้อมูล --</option>
                     </select>
                 </section>
 
                 <section>
-                    <label for="province">เลือกจังหวัด:</label>
+                    <label for="province" class="label-title">เลือกจังหวัด</label>
                     <select id="province" name="province">
                         <option value="">-- ทั้งหมด --</option>
                     </select>
                 </section>
 
                 <div class="button-group">
-    <button type="submit" class="btn-search">
-        <span>🔍</span> ค้นหาข้อมูล
-    </button>
-    <button type="reset" id="btnReset" class="btn-reset">
-        <span>🔄</span> ล้างค่า
-    </button>
-</div>
+                    <button type="submit" class="btn-search">
+                        <span>🔍</span> ค้นหาข้อมูล
+                    </button>
+                    <button type="reset" id="btnReset" class="btn-reset">
+                        <span>🔄</span> ล้างค่า
+                    </button>
+                </div>
             </form>
         </aside>
 
         <section class="result-panel">
             <div id="resultArea">
-                <div class="placeholder-text">กรุณาเลือกเงื่อนไขและกดปุ่มค้นหาเพื่อดูข้อมูล</div>
+                <div class="placeholder-content">
+                    <div class="icon-bg">📊</div>
+                    <p>กรุณาเลือกเงื่อนไขและกดปุ่มค้นหาเพื่อดูข้อมูล</p>
+                </div>
             </div>
         </section>
     </div>
