@@ -3,70 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบตรวจสอบผลการประเมินมาตรฐานฯ 3S</title>
+    <title>ระบบเกณฑ์การประเมิน ศสต./ศบต. - MOPH</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        body { font-family: 'Sarabun', sans-serif; background-color: #f8fafc; }
+        .moph-green { background-color: #006554; }
+        .btn-type.active { background-color: #006554; color: white; border-color: #006554; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        .loading-overlay { display: none; }
+        .loading-overlay.active { display: flex; }
+    </style>
 </head>
 <body>
 
-    <header class="main-header">
-        <div class="header-container">
-            <h1>ระบบตรวจสอบผลการประเมินมาตรฐานฯ 3S</h1>
-            <div class="header-badge">ปีงบประมาณ พ.ศ. 2569</div>
+    <div id="loader" class="loading-overlay fixed inset-0 bg-white/80 z-50 flex-col items-center justify-center active">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-emerald-600 border-solid"></div>
+        <p class="mt-4 text-emerald-800 font-semibold">กำลังอัปโหลดข้อมูล...</p>
+    </div>
+
+    <header class="moph-green text-white shadow-xl">
+        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-4">
+                <img src="Seal.png" alt="MOPH" class="h-14 bg-white rounded-full p-1">
+                <div>
+                    <h1 class="text-xl font-bold leading-tight">ระบบตรวจสอบผลการประเมินมาตรฐานฯ 3S</h1>
+                    <p class="text-xs text-emerald-100">ปีงบประมาณ พ.ศ. 2569</p>
+                </div>
+            </div>
+            <button onclick="exportToExcel()" class="bg-emerald-500 hover:bg-emerald-400 text-white px-6 py-2 rounded-full flex items-center gap-2 transition-all font-semibold shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+                ดาวน์โหลด Excel
+            </button>
         </div>
     </header>
 
-    <div class="dashboard-container">
-        <aside class="search-panel">
-            <form id="searchForm">
-                <section>
-                    <label class="label-title">ประเภทหน่วยงาน</label>
-                    <div class="type-selector">
-                        <input type="radio" id="all" name="org_type" value="all" checked>
-                        <label for="all">ทั้งหมด</label>
-                        <input type="radio" id="sbt" name="org_type" value="ศบต">
-                        <label for="sbt">ศบต.</label>
-                        <input type="radio" id="sst" name="org_type" value="ศสต">
-                        <label for="sst">ศสต.</label>
+    <main class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-2xl shadow-sm border border-emerald-100 p-6 mb-8">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                
+                <div>
+                    <label class="block text-sm font-bold text-gray-600 mb-3">ประเภทหน่วยงาน</label>
+                    <div class="flex gap-2" id="typeGroup">
+                        <button onclick="filterType('ทั้งหมด')" class="btn-type active flex-1 py-2 px-3 border border-emerald-200 rounded-lg text-sm font-semibold transition-all">ทั้งหมด</button>
+                        <button onclick="filterType('ศสต')" class="btn-type flex-1 py-2 px-3 border border-emerald-200 rounded-lg text-sm font-semibold transition-all">ศสต</button>
+                        <button onclick="filterType('ศบต')" class="btn-type flex-1 py-2 px-3 border border-emerald-200 rounded-lg text-sm font-semibold transition-all">ศบต</button>
                     </div>
-                </section>
-
-                <section>
-                    <label for="region" class="label-title">เลือกเขต</label>
-                    <select id="region" name="region">
-                        <option value="">-- กำลังโหลดข้อมูล --</option>
-                    </select>
-                </section>
-
-                <section>
-                    <label for="province" class="label-title">เลือกจังหวัด</label>
-                    <select id="province" name="province">
-                        <option value="">-- ทั้งหมด --</option>
-                    </select>
-                </section>
-
-                <div class="button-group">
-                    <button type="submit" class="btn-search">
-                        <span>🔍</span> ค้นหาข้อมูล
-                    </button>
-                    <button type="reset" id="btnReset" class="btn-reset">
-                        <span>🔄</span> ล้างค่า
-                    </button>
                 </div>
-            </form>
-        </aside>
 
-        <section class="result-panel">
-            <div id="resultArea">
-                <div class="placeholder-content">
-                    <div class="icon-bg">📊</div>
-                    <p>กรุณาเลือกเงื่อนไขและกดปุ่มค้นหาเพื่อดูข้อมูล</p>
+                <div>
+                    <label class="block text-sm font-bold text-gray-600 mb-3">เขตสุขภาพ</label>
+                    <select id="selectRegion" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-emerald-500">
+                        <option value="ทั้งหมด">-- ทั้งหมด --</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-gray-600 mb-3">จังหวัด</label>
+                    <select id="selectProvince" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-emerald-500">
+                        <option value="ทั้งหมด">-- ทั้งหมด --</option>
+                    </select>
+                </div>
+
+                <div class="flex items-end gap-2">
+                    <button onclick="applySearch()" class="flex-1 moph-green hover:opacity-90 text-white font-bold py-2.5 rounded-lg transition-all shadow-md">
+                        🔍 ค้นหา
+                    </button>
+                    <button onclick="resetAll()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 rounded-lg transition-all">
+                        🔄 ล้างค่า
+                    </button>
                 </div>
             </div>
-        </section>
-    </div>
+        </div>
 
-    <script src="script.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="bg-emerald-50 px-6 py-3 border-b border-emerald-100">
+                <p class="text-sm font-semibold text-emerald-900">
+                    พบข้อมูลทั้งหมด: <span id="totalItems" class="text-lg font-bold">0</span> รายการ
+                </p>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="bg-emerald-50 text-emerald-900 uppercase text-sm">
+                            <th class="px-6 py-4 font-bold border-b border-emerald-100 text-center w-20">ประเภท</th>
+                            <th class="px-6 py-4 font-bold border-b border-emerald-100">ชื่อหน่วยงาน</th>
+                            <th class="px-6 py-4 font-bold border-b border-emerald-100">จังหวัด</th>
+                            <th class="px-6 py-4 font-bold border-b border-emerald-100">เขต</th>
+                            <th class="px-6 py-4 font-bold border-b border-emerald-100 text-center">ผลการประเมิน</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTable" class="divide-y divide-gray-100">
+                        </tbody>
+                </table>
+            </div>
+            <div id="noData" class="hidden p-20 text-center text-gray-400">
+                ไม่พบข้อมูลที่ตรงกับเงื่อนไขการค้นหา
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const URL_SST = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSHyPTTh-spmZLpomLXNiKqKFPUHIWLe74ZfUnWuHoQIKAWHHsuG8s5i7kBooTTt1MP9QzjqF9kyC9J/pub?output=csv";
+        const URL_SBT = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ4b--rZComvk7MvvpnPRU_B-chB77lHmNhhKzH8Wt2FgVad2XbVzmw5B5UKem3m12r2fOd1_ngF20N/pub?output=csv";
+
+        let allData = [];
+        let filteredData = [];
+        let currentType = 'ทั้งหมด';
+
+        async function init() {
+            try {
+                const [resSST, resSBT] = await Promise.all([
+                    fetch(URL_SST).then(r => r.text()),
+                    fetch(URL_SBT).then(r => r.text())
+                ]);
+
+                const parsedSST = Papa.parse(resSST, { header: true });
+                const keysSST = parsedSST.meta.fields;
+                const dataSST = parsedSST.data.map(i => ({ 
+                    ...i, 
+                    type: 'ศสต', 
+                    'เกณฑ์การประเมิน': i[keysSST[27]] 
+                }));
+
+                const parsedSBT = Papa.parse(resSBT, { header: true });
+                const keysSBT = parsedSBT.meta.fields;
+                const dataSBT = parsedSBT.data.map(i => ({ 
+                    ...i, 
+                    type: 'ศบต', 
+                    'เกณฑ์การประเมิน': i[keysSBT[33]] 
+                }));
+
+                allData = [...dataSST, ...dataSBT].filter(i => i.ชื่อหน่วยงาน); 
+                filteredData = [...allData];
+
+                populateDropdowns();
+                renderTable(filteredData);
+                document.getElementById('loader').classList.remove('active');
+            } catch (error) {
+                console.error("Error loading data:", error);
+                alert("ไม่สามารถดึงข้อมูลได้ กรุณาลองใหม่อีกครั้ง");
+            }
+        }
+
+        function populateDropdowns() {
+            const regions = [...new Set(allData.map(i => i.เขต))]
+                .filter(Boolean)
+                .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+
+            const provinces = [...new Set(allData.map(i => i.จังหวัด))].filter(Boolean).sort();
+
+            const regEl = document.getElementById('selectRegion');
+            const provEl = document.getElementById('selectProvince');
+
+            regions.forEach(r => regEl.innerHTML += `<option value="${r}">${r}</option>`);
+            provinces.forEach(p => provEl.innerHTML += `<option value="${p}">${p}</option>`);
+        }
+
+        function filterType(type) {
+            currentType = type;
+            const btns = document.querySelectorAll('.btn-type');
+            btns.forEach(b => {
+                b.classList.remove('active');
+                if(b.innerText === type) b.classList.add('active');
+            });
+        }
+
+        function applySearch() {
+            const region = document.getElementById('selectRegion').value;
+            const province = document.getElementById('selectProvince').value;
+
+            filteredData = allData.filter(item => {
+                const matchType = currentType === 'ทั้งหมด' || item.type === currentType;
+                const matchRegion = region === 'ทั้งหมด' || item.เขต === region;
+                const matchProv = province === 'ทั้งหมด' || item.จังหวัด === province;
+                return matchType && matchRegion && matchProv;
+            });
+
+            renderTable(filteredData);
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('dataTable');
+            const noData = document.getElementById('noData');
+            const totalItemsEl = document.getElementById('totalItems');
+            
+            // อัปเดตตัวเลขรายการทั้งหมด
+            totalItemsEl.innerText = data.length.toLocaleString();
+            
+            tbody.innerHTML = '';
+
+            if (data.length === 0) {
+                noData.classList.remove('hidden');
+            } else {
+                noData.classList.add('hidden');
+                data.forEach(item => {
+                    let badgeClass = 'bg-gray-100 text-gray-600'; 
+                    const status = item.เกณฑ์การประเมิน || '';
+
+                    if (status.includes('ยังไม่มีการดำเนินงาน')) {
+                        badgeClass = 'bg-gray-200 text-gray-500';
+                    } else if (status.includes('ต่ำกว่ามาตรฐาน')) {
+                        badgeClass = 'bg-red-100 text-red-600';
+                    } else if (status.includes('ต้นแบบ')) {
+                        badgeClass = 'bg-green-100 text-green-700';
+                    } else if (status.includes('ระดับดี')) {
+                        badgeClass = 'bg-orange-100 text-orange-700';
+                    } else if (status.includes('ระดับมาตรฐาน')) {
+                        badgeClass = 'bg-yellow-100 text-yellow-700';
+                    }
+
+                    const typeBadge = item.type === 'ศสต' ? 'bg-blue-600' : 'bg-purple-600';
+                    
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4 text-center">
+                                <span class="${typeBadge} text-white text-[10px] px-2 py-0.5 rounded font-bold">${item.type}</span>
+                            </td>
+                            <td class="px-6 py-4 font-semibold text-gray-800">${item.ชื่อหน่วยงาน || '-'}</td>
+                            <td class="px-6 py-4 text-gray-600">${item.จังหวัด || '-'}</td>
+                            <td class="px-6 py-4 text-gray-600">${item.เขต || '-'}</td>
+                            <td class="px-6 py-4 text-center">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold ${badgeClass}">
+                                    ${item.เกณฑ์การประเมิน || 'รอตรวจสอบ'}
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
+        function resetAll() {
+            filterType('ทั้งหมด');
+            document.getElementById('selectRegion').value = 'ทั้งหมด';
+            document.getElementById('selectProvince').value = 'ทั้งหมด';
+            filteredData = [...allData];
+            renderTable(filteredData);
+        }
+
+        function exportToExcel() {
+            if(filteredData.length === 0) return alert("ไม่มีข้อมูลสำหรับส่งออก");
+            
+            const excelData = filteredData.map(item => ({
+                "ประเภท": item.type,
+                "ชื่อหน่วยงาน": item.ชื่อหน่วยงาน,
+                "จังหวัด": item.จังหวัด,
+                "เขต": item.เขต,
+                "เกณฑ์การประเมิน": item.เกณฑ์การประเมิน
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(excelData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Assessment_Data");
+            XLSX.writeFile(wb, `รายงานผลการประเมิน_${new Date().toLocaleDateString('th-TH')}.xlsx`);
+        }
+
+        init();
+    </script>
 </body>
 </html>
